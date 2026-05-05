@@ -219,7 +219,18 @@
                 <div class="filter-row" id="distFilters">
                     <button class="filter-chip active" data-dist="1" onclick="setDist(1)">~1km</button>
                     <button class="filter-chip" data-dist="3" onclick="setDist(3)">~3km</button>
-                    <button class="filter-chip" data-dist="5" onclick="setDist(5)">~5km</button>
+                </div>
+                <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:2px">🏷 카테고리</div>
+                <div class="filter-row" id="catFilters">
+                    <button class="filter-chip active" data-cat="" onclick="setCat('')">전체</button>
+                    <button class="filter-chip" data-cat="한식" onclick="setCat('한식')">🍚 한식</button>
+                    <button class="filter-chip" data-cat="중식" onclick="setCat('중식')">🥡 중식</button>
+                    <button class="filter-chip" data-cat="일식" onclick="setCat('일식')">🍣 일식</button>
+                    <button class="filter-chip" data-cat="양식" onclick="setCat('양식')">🍝 양식</button>
+                    <button class="filter-chip" data-cat="분식" onclick="setCat('분식')">🍢 분식</button>
+                    <button class="filter-chip" data-cat="술집" onclick="setCat('술집')">🍺 술집</button>
+                    <button class="filter-chip" data-cat="단체" onclick="setCat('단체')">👥 단체OK</button>
+                    <button class="filter-chip" data-cat="혼밥" onclick="setCat('혼밥')">🧑‍🍳 혼밥</button>
                 </div>
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="🔍 식당 이름, 메뉴 검색..." oninput="doSearch()">
@@ -234,7 +245,7 @@
         <div class="map-container">
             <div id="map"></div>
             <div class="dist-legend" id="distLegend">
-                🟠 <b>캠퍼스</b> <span>|</span> 🔵 <b>1km</b> 버퍼 <span>|</span> 🟢 <b>3km</b> <span>|</span> 🟡 <b>5km</b>
+                🟠 <b>캠퍼스</b> <span>|</span> 🔵 <b>1km</b> 버퍼 <span>|</span> 🟢 <b>3km</b>
             </div>
         </div>
     </div>
@@ -274,6 +285,9 @@
             <div class="form-group"><label>🍽 대표 메뉴</label><input type="text" id="addMenu" placeholder="ex) 짜장면 6,000원"></div>
             <div class="form-group"><label>💰 가격대</label><select id="addPrice">
                 <option value="">선택</option><option value="만원 미만">만원 미만</option><option value="1~2만원">1~2만원</option><option value="2~3만원">2~3만원</option><option value="3만원 이상">3만원 이상</option>
+            </select></div>
+            <div class="form-group"><label>🏷 카테고리</label><select id="addCategory">
+                <option value="">선택</option><option value="한식">🍚 한식</option><option value="중식">🥡 중식</option><option value="일식">🍣 일식</option><option value="양식">🍝 양식</option><option value="분식">🍢 분식</option><option value="술집">🍺 술집</option><option value="카페">☕ 카페</option>
             </select></div>
             <div class="form-group"><label>🧑‍🍳 혼밥 가능?</label><select id="addSolo">
                 <option value="yes">✅ 혼밥 OK</option><option value="maybe">🤔 보통</option><option value="no">❌ 혼밥 어려움</option>
@@ -340,10 +354,22 @@
     ];
 
     // ===== STATE =====
+    const DATA_VERSION = 2; // bump when restaurant data changes
     let currentDist = 1;
-    let restaurants = loadFromStorage('ynu_restaurants', defaultRestaurants());
+    let currentCat = '';
+    let storedVersion = parseInt(localStorage.getItem('ynu_version') || '0');
+    let restaurants = (storedVersion >= DATA_VERSION)
+        ? loadFromStorage('ynu_restaurants', defaultRestaurants())
+        : saveLoadDefaults();
     let reviews = loadFromStorage('ynu_reviews', {});
     let user = loadFromStorage('ynu_user', { name: '익명', email: null, provider: 'anonymous', photo: null, reviews: 0 });
+
+    function saveLoadDefaults() {
+        const defs = defaultRestaurants();
+        saveToStorage('ynu_restaurants', defs);
+        localStorage.setItem('ynu_version', DATA_VERSION.toString());
+        return defs;
+    }
 
     function defaultRestaurants() {
         return [
@@ -361,6 +387,31 @@
             { id:12, name:'도쿄스테이크', lat:35.8270, lng:128.7410, menu:'스테이크 정식 18,000원', price:'1~2만원', solo:'yes', addr:'경산시 계양동', tags:'스테이크|일식', photo:null },
             { id:13, name:'하양 장터국밥', lat:35.8400, lng:128.7700, menu:'순대국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 하양읍', tags:'국밥|순대', photo:null },
             { id:14, name:'중방동 순대국', lat:35.8220, lng:128.7390, menu:'순대국 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동', tags:'순대국|전통', photo:null },
+            { id:15, name:'복터진집 수성점', lat:35.8253, lng:128.7387, menu:'복어 코스요리 (복지리/복매운탕)', price:'1인 30,000원~', solo:'maybe', addr:'경상북도 경산시 중방동 700-1', tags:'한식|단체', photo:null },
+            { id:16, name:'유생촌 경산점', lat:35.8232, lng:128.7398, menu:'돈까스 무한리필', price:'1인 12,900원', solo:'yes', addr:'경상북도 경산시 중방동 650', tags:'일식|단체', photo:null },
+            { id:17, name:'우미관철판구이', lat:35.8259, lng:128.7426, menu:'철판구이 모둠 (고기+해산물)', price:'2인 35,000원~', solo:'maybe', addr:'경상북도 경산시 중방동 720', tags:'한식|단체', photo:null },
+            { id:18, name:'자인가든 식육식당', lat:35.8145, lng:128.7431, menu:'한우 꽃등심(150g), 흑돼지 오겹살(100g)', price:'한우 꽃등심 15,000원', solo:'yes', addr:'경상북도 경산시 자인면 서부리 16', tags:'한식|단체', photo:null },
+            { id:19, name:'물총조개칼국수', lat:35.8287, lng:128.7607, menu:'조개칼국수, 해물파전', price:'조개칼국수 8,000원', solo:'yes', addr:'경상북도 경산시 삼풍동 150', tags:'한식|단체', photo:null },
+            { id:20, name:'경산시장 닭곰탕', lat:35.8261, lng:128.7423, menu:'닭곰탕, 닭무침', price:'닭곰탕 8,000원', solo:'yes', addr:'경상북도 경산시 중방동 450 (경산시장 내)', tags:'한식|단체', photo:null },
+            { id:21, name:'경산시장 칼국수 골목', lat:35.8257, lng:128.7404, menu:'손칼국수, 수육', price:'칼국수 6,000원', solo:'yes', addr:'경상북도 경산시 중방동 460 (경산시장 내)', tags:'한식|단체', photo:null },
+            { id:22, name:'진주회관', lat:35.8249, lng:128.7393, menu:'모둠회, 물회', price:'물회 12,000원', solo:'yes', addr:'경상북도 경산시 중방동 510', tags:'일식|단체', photo:null },
+            { id:23, name:'옥산동술집', lat:35.8357, lng:128.7425, menu:'모듬전, 두부김치, 막걸리', price:'모듬전 12,000원', solo:'yes', addr:'경상북도 경산시 옥산동 200', tags:'술집|단체', photo:null },
+            { id:24, name:'영남대 후문 돈까스 클럽', lat:35.8295, lng:128.7580, menu:'치즈돈까스, 매운돈까스', price:'치즈돈까스 8,500원', solo:'yes', addr:'경상북도 경산시 대동 220 (영남대 후문)', tags:'일식|단체', photo:null },
+            { id:25, name:'영대후문 김밥천국', lat:35.8291, lng:128.7576, menu:'참치김밥, 라볶이, 돈까스', price:'김밥 3,000원~', solo:'yes', addr:'경상북도 경산시 대동 230 (영남대 후문)', tags:'분식|단체', photo:null },
+            { id:26, name:'화로상회', lat:35.8293, lng:128.7572, menu:'삼겹살, 목살, 된장찌개', price:'삼겹살 11,000원', solo:'no', addr:'경상북도 경산시 대동 240 (영남대 후문)', tags:'한식|단체', photo:null },
+            { id:27, name:'마루공원', lat:35.8294, lng:128.7568, menu:'떡볶이, 튀김모듬, 순대', price:'떡볶이 5,000원', solo:'yes', addr:'경상북도 경산시 대동 250 (영남대 후문)', tags:'분식|단체', photo:null },
+            { id:28, name:'스시노백', lat:35.8296, lng:128.7564, menu:'초밥세트, 연어사시미', price:'초밥세트 12,000원~', solo:'yes', addr:'경상북도 경산시 대동 260 (영남대 후문)', tags:'일식|단체', photo:null },
+            { id:29, name:'호식이두마리치킨', lat:35.8254, lng:128.7386, menu:'후라이드치킨, 양념치킨', price:'치킨 한마리 11,900원~', solo:'yes', addr:'경상북도 경산시 중방동 550', tags:'한식|단체', photo:null },
+            { id:30, name:'삼풍동 막창촌', lat:35.8288, lng:128.7602, menu:'소막창, 곱창전골', price:'막창 12,000원', solo:'yes', addr:'경상북도 경산시 삼풍동 200', tags:'한식|단체', photo:null },
+            { id:31, name:'대가네 순대국', lat:35.8291, lng:128.7598, menu:'순대국밥, 모듬순대', price:'순대국밥 7,500원', solo:'yes', addr:'경상북도 경산시 삼풍동 210', tags:'한식|단체', photo:null },
+            { id:32, name:'경산 중화요리 진진', lat:35.8238, lng:128.7409, menu:'짜장면, 짬뽕, 탕수육', price:'짜장면 5,500원', solo:'yes', addr:'경상북도 경산시 중방동 520', tags:'중식|단체', photo:null },
+            { id:33, name:'롤링파스타 경산점', lat:35.8252, lng:128.7418, menu:'크림파스타, 고르곤졸라피자', price:'파스타 9,900원~', solo:'yes', addr:'경상북도 경산시 중방동 580', tags:'양식|단체', photo:null },
+            { id:34, name:'송림커피', lat:35.8491, lng:128.7184, menu:'아메리카노, 시그니처 라떼', price:'아메리카노 5,000원', solo:'yes', addr:'경상북도 경산시 와촌면 신한리 384', tags:'카페', photo:null },
+            { id:35, name:'장수오리 팔공점', lat:35.8508, lng:128.7204, menu:'오리로스, 오리백숙, 훈제오리', price:'오리로스 25,000원~', solo:'no', addr:'경상북도 경산시 와촌면 팔공로 188', tags:'한식|단체', photo:null },
+            { id:36, name:'이모네 분식', lat:35.8282, lng:128.7590, menu:'떡볶이, 쫄면, 김밥', price:'떡볶이 3,500원', solo:'yes', addr:'경상북도 경산시 삼풍동 100', tags:'분식|단체', photo:null },
+            { id:37, name:'경산 중앙탕', lat:35.8226, lng:128.7401, menu:'갈비탕, 육개장', price:'갈비탕 10,000원', solo:'yes', addr:'경상북도 경산시 중방동 480', tags:'한식|단체', photo:null },
+            { id:38, name:'피자스쿨 경산점', lat:35.8251, lng:128.7397, menu:'고구마피자, 불고기피자', price:'피자 8,900원~', solo:'yes', addr:'경상북도 경산시 중방동 600', tags:'양식|단체', photo:null },
+            { id:39, name:'백소정 경산점', lat:35.8246, lng:128.7412, menu:'가츠동, 냉모밀, 돈까스', price:'가츠동 8,900원', solo:'yes', addr:'경상북도 경산시 중방동 620', tags:'일식|단체', photo:null },
         ];
     }
 
@@ -422,7 +473,7 @@
         } catch(e) { console.log('Buffer error:', e); }
 
         // Draw all buffers faintly
-        [1,3,5].forEach(dist => {
+        [1,3].forEach(dist => {
             if (dist === currentDist) return;
             try {
                 const buf = turf.buffer(poly, dist, {units: 'kilometers', steps: 32});
@@ -485,13 +536,25 @@
         renderAll();
     }
 
+    function setCat(cat) {
+        currentCat = cat;
+        document.querySelectorAll('#catFilters .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+        renderAll();
+    }
+
     function filterRestaurants() {
         const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
         return restaurants.filter(r => {
             const d = distanceToPolygon(r.lat, r.lng, CAMPUS_POLYGON);
             const inRange = d <= currentDist;
+            let catMatch = true;
+            if (currentCat) {
+                if (currentCat === '혼밥') catMatch = r.solo === 'yes';
+                else if (currentCat === '단체') catMatch = (r.tags||'').includes('단체');
+                else catMatch = (r.tags||'').includes(currentCat);
+            }
             const matchesSearch = !term || r.name.toLowerCase().includes(term) || r.menu.toLowerCase().includes(term) || (r.tags||'').includes(term);
-            return inRange && matchesSearch;
+            return inRange && catMatch && matchesSearch;
         });
     }
 
@@ -625,7 +688,7 @@
             price: document.getElementById('addPrice').value || '',
             solo: document.getElementById('addSolo').value || 'maybe',
             addr: document.getElementById('addAddr').value.trim() || '',
-            tags: '', photo: document.getElementById('addPhoto').value.trim() || null
+            tags: document.getElementById('addCategory').value || '', photo: document.getElementById('addPhoto').value.trim() || null
         };
         restaurants.push(newR);
         saveToStorage('ynu_restaurants', restaurants);
