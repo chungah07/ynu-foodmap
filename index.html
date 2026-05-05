@@ -354,7 +354,7 @@
     ];
 
     // ===== STATE =====
-    const DATA_VERSION = 2; // bump when restaurant data changes
+    const DATA_VERSION = 3; // bump when restaurant data changes
     let currentDist = 1;
     let currentCat = '';
     let storedVersion = parseInt(localStorage.getItem('ynu_version') || '0');
@@ -373,45 +373,41 @@
 
     function defaultRestaurants() {
         return [
-            { id:1, name:'김밥천국 영남대점', lat:35.8320, lng:128.7530, menu:'김밥 3,500원', price:'만원 미만', solo:'yes', addr:'경산시 대동 214-1', tags:'분식|김밥|라면', photo:null },
-            { id:2, name:'명동칼국수', lat:35.8318, lng:128.7525, menu:'칼국수 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 198-7', tags:'칼국수|만두', photo:null },
-            { id:3, name:'영남반점', lat:35.8315, lng:128.7530, menu:'짜장면 7,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 220-3', tags:'중식|짜장면|짬뽕', photo:null },
-            { id:4, name:'돈까스클럽', lat:35.8319, lng:128.7528, menu:'등심돈까스 9,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 215', tags:'돈까스|일식', photo:null },
-            { id:5, name:'맘스터치 영남대점', lat:35.8314, lng:128.7527, menu:'싸이버거 4,900원', price:'만원 미만', solo:'yes', addr:'경산시 대동 230', tags:'버거|치킨|패스트푸드', photo:null },
-            { id:6, name:'서브웨이 영남대점', lat:35.8313, lng:128.7528, menu:'이탈리안BMT 7,200원', price:'만원 미만', solo:'yes', addr:'경산시 대동 231', tags:'샌드위치|건강식', photo:null },
-            { id:7, name:'한솥도시락 영대후문', lat:35.8292, lng:128.7590, menu:'돈까스도련님 5,500원', price:'만원 미만', solo:'yes', addr:'경산시 삼풍동 509-1', tags:'도시락|가성비', photo:null },
-            { id:8, name:'엽기떡볶이 영남대', lat:35.8295, lng:128.7588, menu:'엽떡 14,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 495', tags:'떡볶이|매운맛', photo:null },
-            { id:9, name:'BBQ 영남대후문점', lat:35.8290, lng:128.7593, menu:'황금올리브 20,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 480', tags:'치킨|배달', photo:null },
-            { id:10, name:'60계치킨 경산영대', lat:35.8293, lng:128.7585, menu:'후라이드 17,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 478', tags:'치킨|양념', photo:null },
-            { id:11, name:'경산시장 국밥거리', lat:35.8250, lng:128.7430, menu:'돼지국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 시장', tags:'국밥|시장|전통', photo:null },
-            { id:12, name:'도쿄스테이크', lat:35.8270, lng:128.7410, menu:'스테이크 정식 18,000원', price:'1~2만원', solo:'yes', addr:'경산시 계양동', tags:'스테이크|일식', photo:null },
-            { id:13, name:'하양 장터국밥', lat:35.8400, lng:128.7700, menu:'순대국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 하양읍', tags:'국밥|순대', photo:null },
-            { id:14, name:'중방동 순대국', lat:35.8220, lng:128.7390, menu:'순대국 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동', tags:'순대국|전통', photo:null },
-            { id:15, name:'복터진집 수성점', lat:35.8253, lng:128.7387, menu:'복어 코스요리 (복지리/복매운탕)', price:'1인 30,000원~', solo:'maybe', addr:'경상북도 경산시 중방동 700-1', tags:'한식|단체', photo:null },
-            { id:16, name:'유생촌 경산점', lat:35.8232, lng:128.7398, menu:'돈까스 무한리필', price:'1인 12,900원', solo:'yes', addr:'경상북도 경산시 중방동 650', tags:'일식|단체', photo:null },
-            { id:17, name:'우미관철판구이', lat:35.8259, lng:128.7426, menu:'철판구이 모둠 (고기+해산물)', price:'2인 35,000원~', solo:'maybe', addr:'경상북도 경산시 중방동 720', tags:'한식|단체', photo:null },
-            { id:18, name:'자인가든 식육식당', lat:35.8145, lng:128.7431, menu:'한우 꽃등심(150g), 흑돼지 오겹살(100g)', price:'한우 꽃등심 15,000원', solo:'yes', addr:'경상북도 경산시 자인면 서부리 16', tags:'한식|단체', photo:null },
-            { id:19, name:'물총조개칼국수', lat:35.8287, lng:128.7607, menu:'조개칼국수, 해물파전', price:'조개칼국수 8,000원', solo:'yes', addr:'경상북도 경산시 삼풍동 150', tags:'한식|단체', photo:null },
-            { id:20, name:'경산시장 닭곰탕', lat:35.8261, lng:128.7423, menu:'닭곰탕, 닭무침', price:'닭곰탕 8,000원', solo:'yes', addr:'경상북도 경산시 중방동 450 (경산시장 내)', tags:'한식|단체', photo:null },
-            { id:21, name:'경산시장 칼국수 골목', lat:35.8257, lng:128.7404, menu:'손칼국수, 수육', price:'칼국수 6,000원', solo:'yes', addr:'경상북도 경산시 중방동 460 (경산시장 내)', tags:'한식|단체', photo:null },
-            { id:22, name:'진주회관', lat:35.8249, lng:128.7393, menu:'모둠회, 물회', price:'물회 12,000원', solo:'yes', addr:'경상북도 경산시 중방동 510', tags:'일식|단체', photo:null },
-            { id:23, name:'옥산동술집', lat:35.8357, lng:128.7425, menu:'모듬전, 두부김치, 막걸리', price:'모듬전 12,000원', solo:'yes', addr:'경상북도 경산시 옥산동 200', tags:'술집|단체', photo:null },
-            { id:24, name:'영남대 후문 돈까스 클럽', lat:35.8295, lng:128.7580, menu:'치즈돈까스, 매운돈까스', price:'치즈돈까스 8,500원', solo:'yes', addr:'경상북도 경산시 대동 220 (영남대 후문)', tags:'일식|단체', photo:null },
-            { id:25, name:'영대후문 김밥천국', lat:35.8291, lng:128.7576, menu:'참치김밥, 라볶이, 돈까스', price:'김밥 3,000원~', solo:'yes', addr:'경상북도 경산시 대동 230 (영남대 후문)', tags:'분식|단체', photo:null },
-            { id:26, name:'화로상회', lat:35.8293, lng:128.7572, menu:'삼겹살, 목살, 된장찌개', price:'삼겹살 11,000원', solo:'no', addr:'경상북도 경산시 대동 240 (영남대 후문)', tags:'한식|단체', photo:null },
-            { id:27, name:'마루공원', lat:35.8294, lng:128.7568, menu:'떡볶이, 튀김모듬, 순대', price:'떡볶이 5,000원', solo:'yes', addr:'경상북도 경산시 대동 250 (영남대 후문)', tags:'분식|단체', photo:null },
-            { id:28, name:'스시노백', lat:35.8296, lng:128.7564, menu:'초밥세트, 연어사시미', price:'초밥세트 12,000원~', solo:'yes', addr:'경상북도 경산시 대동 260 (영남대 후문)', tags:'일식|단체', photo:null },
-            { id:29, name:'호식이두마리치킨', lat:35.8254, lng:128.7386, menu:'후라이드치킨, 양념치킨', price:'치킨 한마리 11,900원~', solo:'yes', addr:'경상북도 경산시 중방동 550', tags:'한식|단체', photo:null },
-            { id:30, name:'삼풍동 막창촌', lat:35.8288, lng:128.7602, menu:'소막창, 곱창전골', price:'막창 12,000원', solo:'yes', addr:'경상북도 경산시 삼풍동 200', tags:'한식|단체', photo:null },
-            { id:31, name:'대가네 순대국', lat:35.8291, lng:128.7598, menu:'순대국밥, 모듬순대', price:'순대국밥 7,500원', solo:'yes', addr:'경상북도 경산시 삼풍동 210', tags:'한식|단체', photo:null },
-            { id:32, name:'경산 중화요리 진진', lat:35.8238, lng:128.7409, menu:'짜장면, 짬뽕, 탕수육', price:'짜장면 5,500원', solo:'yes', addr:'경상북도 경산시 중방동 520', tags:'중식|단체', photo:null },
-            { id:33, name:'롤링파스타 경산점', lat:35.8252, lng:128.7418, menu:'크림파스타, 고르곤졸라피자', price:'파스타 9,900원~', solo:'yes', addr:'경상북도 경산시 중방동 580', tags:'양식|단체', photo:null },
-            { id:34, name:'송림커피', lat:35.8491, lng:128.7184, menu:'아메리카노, 시그니처 라떼', price:'아메리카노 5,000원', solo:'yes', addr:'경상북도 경산시 와촌면 신한리 384', tags:'카페', photo:null },
-            { id:35, name:'장수오리 팔공점', lat:35.8508, lng:128.7204, menu:'오리로스, 오리백숙, 훈제오리', price:'오리로스 25,000원~', solo:'no', addr:'경상북도 경산시 와촌면 팔공로 188', tags:'한식|단체', photo:null },
-            { id:36, name:'이모네 분식', lat:35.8282, lng:128.7590, menu:'떡볶이, 쫄면, 김밥', price:'떡볶이 3,500원', solo:'yes', addr:'경상북도 경산시 삼풍동 100', tags:'분식|단체', photo:null },
-            { id:37, name:'경산 중앙탕', lat:35.8226, lng:128.7401, menu:'갈비탕, 육개장', price:'갈비탕 10,000원', solo:'yes', addr:'경상북도 경산시 중방동 480', tags:'한식|단체', photo:null },
-            { id:38, name:'피자스쿨 경산점', lat:35.8251, lng:128.7397, menu:'고구마피자, 불고기피자', price:'피자 8,900원~', solo:'yes', addr:'경상북도 경산시 중방동 600', tags:'양식|단체', photo:null },
-            { id:39, name:'백소정 경산점', lat:35.8246, lng:128.7412, menu:'가츠동, 냉모밀, 돈까스', price:'가츠동 8,900원', solo:'yes', addr:'경상북도 경산시 중방동 620', tags:'일식|단체', photo:null },
+            // ==== 정문/영남대역 주변 (청운로, 대학로) ====
+            { id:1, name:'카츠디나인', lat:35.8298, lng:128.7545, menu:'수제돈까스', price:'1~2만원', solo:'yes', addr:'경산시 청운로 5 (대동 166-4)', tags:'일식', photo:null },
+            { id:2, name:'청춘양식당 영대점', lat:35.8302, lng:128.7540, menu:'파스타, 리조또', price:'1~2만원', solo:'yes', addr:'경산시 청운로 25-1 (대동 152-1)', tags:'양식', photo:null },
+            { id:3, name:'영풍반점', lat:35.8288, lng:128.7548, menu:'짜장면 7,000원', price:'만원 미만', solo:'yes', addr:'경산시 청운1로 28-2 (조영동 583-2)', tags:'중식', photo:null },
+            { id:4, name:'히나타', lat:35.8305, lng:128.7548, menu:'일본가정식', price:'1~2만원', solo:'yes', addr:'경산시 청운1로 11-1 (대동 143-2)', tags:'일식', photo:null },
+            { id:5, name:'1058면', lat:35.8308, lng:128.7545, menu:'국수, 만두', price:'만원 미만', solo:'yes', addr:'경산시 청운로 11 (대동 166-10)', tags:'한식', photo:null },
+            { id:6, name:'돈까스에빠지다', lat:35.8295, lng:128.7542, menu:'수제돈까스', price:'만원 미만', solo:'yes', addr:'경산시 청운로 29 (조영동 583-4)', tags:'일식', photo:null },
+            { id:7, name:'역전우동0410', lat:35.8300, lng:128.7540, menu:'우동, 돈까스', price:'만원 미만', solo:'yes', addr:'경산시 청운로 20 (대동 157-7)', tags:'일식', photo:null },
+            { id:8, name:'초원댁 영남대본점', lat:35.8306, lng:128.7542, menu:'백반, 제육', price:'만원 미만', solo:'yes', addr:'경산시 청운1로 18 (대동 147-6)', tags:'한식', photo:null },
+            { id:9, name:'부대통령뚝배기', lat:35.8296, lng:128.7540, menu:'부대찌개', price:'만원 미만', solo:'yes', addr:'경산시 청운로 영남대점', tags:'한식', photo:null },
+            { id:10, name:'장군찜닭 경산점', lat:35.8292, lng:128.7538, menu:'찜닭', price:'1~2만원', solo:'maybe', addr:'경산시 청운로 (영남대역 인근)', tags:'한식|단체', photo:null },
+            // ==== 영남대역 국밥거리 ====
+            { id:11, name:'찐한부산돼지국밥', lat:35.8285, lng:128.7550, menu:'돼지국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 청운1로 32 (조영동 582-1)', tags:'한식', photo:null },
+            { id:12, name:'대천국밥 영남대점', lat:35.8303, lng:128.7545, menu:'국밥, 수육', price:'만원 미만', solo:'yes', addr:'경산시 청운로 13-3 (대동 158-4)', tags:'한식', photo:null },
+            { id:13, name:'경주국밥', lat:35.8278, lng:128.7565, menu:'돼지국밥', price:'만원 미만', solo:'yes', addr:'경산시 대학로61길 7 (조영동 581-7)', tags:'한식', photo:null },
+            { id:14, name:'청도국밥', lat:35.8265, lng:128.7560, menu:'국밥, 순대', price:'만원 미만', solo:'yes', addr:'경산시 둥지로21길 39 (임당동 626-8)', tags:'한식', photo:null },
+            { id:15, name:'굿밥국밥', lat:35.8275, lng:128.7555, menu:'국밥', price:'만원 미만', solo:'yes', addr:'경산시 대동안길 19 (대동 29-14)', tags:'한식', photo:null },
+            // ==== 영남대 후문/삼풍동 ====
+            { id:16, name:'가안', lat:35.8275, lng:128.7565, menu:'돈까스, 파스타', price:'1~2만원', solo:'yes', addr:'경산시 대학로59길 19 (대동 29-7)', tags:'양식', photo:null },
+            { id:17, name:'돈갓수제돈까스', lat:35.8268, lng:128.7575, menu:'수제돈까스', price:'만원 미만', solo:'yes', addr:'경산시 둥지로 24 (조영동 572-2)', tags:'일식', photo:null },
+            { id:18, name:'한솥도시락', lat:35.8282, lng:128.7600, menu:'도시락 5,500원', price:'만원 미만', solo:'yes', addr:'경산시 삼풍동 509-1', tags:'분식', photo:null },
+            { id:19, name:'엽기떡볶이', lat:35.8285, lng:128.7595, menu:'떡볶이 14,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 495', tags:'분식|단체', photo:null },
+            { id:20, name:'BBQ 영남대후문', lat:35.8280, lng:128.7605, menu:'치킨 20,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 480', tags:'한식|단체', photo:null },
+            { id:21, name:'60계치킨', lat:35.8283, lng:128.7600, menu:'후라이드 17,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 478', tags:'한식|단체', photo:null },
+            // ==== 경산시내/중방동 ====
+            { id:22, name:'온천골가마솥국밥', lat:35.8235, lng:128.7480, menu:'국밥', price:'만원 미만', solo:'yes', addr:'경산시 계양로 175 (계양동 117-10)', tags:'한식', photo:null },
+            { id:23, name:'경산시장 칼국수', lat:35.8245, lng:128.7420, menu:'칼국수 6,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 경산시장', tags:'한식', photo:null },
+            { id:24, name:'경산시장 닭곰탕', lat:35.8242, lng:128.7425, menu:'닭곰탕 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 경산시장', tags:'한식', photo:null },
+            { id:25, name:'유생촌 경산점', lat:35.8230, lng:128.7410, menu:'돈까스 무한리필', price:'1~2만원', solo:'yes', addr:'경산시 중방동 650', tags:'일식|단체', photo:null },
+            { id:26, name:'롤링파스타', lat:35.8240, lng:128.7430, menu:'파스타, 피자', price:'1~2만원', solo:'yes', addr:'경산시 중방동 580', tags:'양식|단체', photo:null },
+            { id:27, name:'백소정 경산점', lat:35.8238, lng:128.7415, menu:'가츠동 8,900원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 620', tags:'일식', photo:null },
+            { id:28, name:'옥산동술집', lat:35.8350, lng:128.7440, menu:'모듬전, 막걸리', price:'1~2만원', solo:'yes', addr:'경산시 옥산동 200', tags:'술집|단체', photo:null },
+            { id:29, name:'경산 중앙탕', lat:35.8228, lng:128.7400, menu:'갈비탕 10,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 480', tags:'한식', photo:null },
+            { id:30, name:'피자스쿨 경산점', lat:35.8245, lng:128.7395, menu:'피자 8,900원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 600', tags:'양식', photo:null },
+            { id:31, name:'김밥천국 영남대', lat:35.8310, lng:128.7540, menu:'김밥 3,500원', price:'만원 미만', solo:'yes', addr:'경산시 대동 214-1', tags:'분식', photo:null },
         ];
     }
 
