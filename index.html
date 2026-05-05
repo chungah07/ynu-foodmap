@@ -26,11 +26,10 @@
             height: 100vh; overflow: hidden;
         }
 
-        /* HEADER */
         .header {
             height: 56px; background: var(--card); border-bottom: 1px solid var(--border);
             display: flex; align-items: center; padding: 0 16px; z-index: 1000;
-            justify-content: space-between; position: relative;
+            justify-content: space-between;
         }
         .header .logo { font-size: 20px; font-weight: 700; color: var(--accent); }
         .header .logo i { margin-right: 6px; }
@@ -53,10 +52,8 @@
         .user-badge .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
         .user-badge .rank { font-size: 11px; color: var(--accent2); }
 
-        /* MAIN LAYOUT */
         .main { display: flex; height: calc(100vh - 56px); position: relative; }
 
-        /* SIDEBAR */
         .sidebar {
             width: 380px; min-width: 380px; background: var(--card);
             border-right: 1px solid var(--border); display: flex; flex-direction: column;
@@ -95,26 +92,16 @@
         }
         .restaurant-card:hover { border-color: var(--accent); background: #1f1f3a; }
         .restaurant-card .name { font-size: 15px; font-weight: 700; color: var(--text); }
-        .restaurant-card .meta {
-            display: flex; gap: 10px; margin-top: 4px; font-size: 12px; color: var(--text2);
-            flex-wrap: wrap;
-        }
+        .restaurant-card .meta { display: flex; gap: 10px; margin-top: 4px; font-size: 12px; color: var(--text2); flex-wrap: wrap; }
         .restaurant-card .meta i { margin-right: 3px; }
         .restaurant-card .tags { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
-        .tag {
-            padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
-        }
+        .tag { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
         .tag.solo { background: rgba(76,175,80,0.15); color: var(--green); }
         .tag.budget { background: rgba(247,201,72,0.15); color: var(--accent2); }
 
-        /* MAP */
         .map-container { flex: 1; position: relative; }
         #map { width: 100%; height: 100%; }
-        .leaflet-popup .popup-content { font-family: 'Segoe UI', sans-serif; }
-        .leaflet-popup .popup-content h3 { font-size: 14px; margin-bottom: 4px; }
-        .leaflet-popup .popup-content p { font-size: 11px; color: #666; margin: 2px 0; }
 
-        /* MODALS */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.7); z-index: 2000; display: none;
@@ -154,8 +141,6 @@
         .auth-provider.apple i { color: #fff; }
         .auth-provider.anonymous i { color: var(--text2); }
         .divider { text-align: center; color: var(--text2); font-size: 12px; margin: 12px 0; }
-
-        /* RANK BADGE */
         .rank-badge {
             display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
             border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 8px;
@@ -165,9 +150,6 @@
         .rank-badge.lv3 { background: rgba(76,175,80,0.15); color: var(--green); }
         .rank-badge.lv4 { background: rgba(74,138,255,0.15); color: var(--blue); }
         .rank-badge.lv5 { background: rgba(255,107,53,0.25); color: #ffd700; }
-        .rank-badge i { font-size: 10px; }
-
-        /* Review items */
         .review-item {
             background: var(--bg); border-radius: 8px; padding: 10px; margin-bottom: 8px;
             border: 1px solid var(--border);
@@ -175,12 +157,8 @@
         .review-item .reviewer { font-size: 12px; color: var(--accent); font-weight: 600; }
         .review-item .review-text { font-size: 13px; margin: 4px 0; color: var(--text); }
         .review-item .review-meta { font-size: 11px; color: var(--text2); }
-
-        /* Empty state */
         .empty-state { text-align: center; padding: 30px; color: var(--text2); }
         .empty-state i { font-size: 40px; display: block; margin-bottom: 12px; }
-
-        /* FAB - add restaurant */
         .fab {
             position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px;
             border-radius: 50%; background: var(--accent); color: #fff; font-size: 24px;
@@ -190,8 +168,6 @@
         }
         .fab:hover { transform: scale(1.1); }
         .fab:active { transform: scale(0.95); }
-
-        /* Toast */
         .toast {
             position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
             background: var(--accent); color: #fff; padding: 10px 20px; border-radius: 8px;
@@ -200,7 +176,15 @@
         }
         .toast.show { opacity: 1; }
 
-        /* Mobile responsive */
+        /* Distance legend on map */
+        .dist-legend {
+            position: absolute; bottom: 12px; left: 12px; z-index: 1000;
+            background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+            padding: 6px 10px; font-size: 11px; color: var(--text2); pointer-events: none;
+        }
+        .dist-legend span { margin: 0 4px; }
+        .dist-legend b { color: var(--accent); }
+
         @media (max-width: 768px) {
             .sidebar { width: 100%; min-width: 100%; max-height: 45%; border-right: none; border-bottom: 1px solid var(--border); }
             .main { flex-direction: column-reverse; }
@@ -211,7 +195,6 @@
     </style>
 </head>
 <body>
-    <!-- HEADER -->
     <div class="header">
         <div class="logo"><i class="fa-solid fa-utensils"></i> YNU FoodMap</div>
         <div class="auth-area" id="authArea">
@@ -228,21 +211,15 @@
         </div>
     </div>
 
-    <!-- MAIN -->
     <div class="main">
-        <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="filters">
-                <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:2px">📍 기준 위치</div>
-                <div class="filter-row" id="gateFilters">
-                    <button class="filter-chip active" data-gate="main" onclick="setGate('main')">정문 📍</button>
-                    <button class="filter-chip" data-gate="back" onclick="setGate('back')">후문 📍</button>
-                </div>
-                <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:2px">🔍 거리</div>
+                <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:2px">🏫 기준: 학교 캠퍼스 바깥라인</div>
+                <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:2px">🔍 거리 (학교 바깥에서부터)</div>
                 <div class="filter-row" id="distFilters">
-                    <button class="filter-chip active" data-dist="1" onclick="setDist(1)">1km</button>
-                    <button class="filter-chip" data-dist="3" onclick="setDist(3)">3km</button>
-                    <button class="filter-chip" data-dist="5" onclick="setDist(5)">5km</button>
+                    <button class="filter-chip active" data-dist="1" onclick="setDist(1)">~1km</button>
+                    <button class="filter-chip" data-dist="3" onclick="setDist(3)">~3km</button>
+                    <button class="filter-chip" data-dist="5" onclick="setDist(5)">~5km</button>
                 </div>
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="🔍 식당 이름, 메뉴 검색..." oninput="doSearch()">
@@ -254,19 +231,17 @@
             <div class="restaurant-list" id="restaurantList"></div>
         </div>
 
-        <!-- MAP -->
         <div class="map-container">
             <div id="map"></div>
+            <div class="dist-legend" id="distLegend">
+                🟠 <b>캠퍼스</b> <span>|</span> 🔵 <b>1km</b> 버퍼 <span>|</span> 🟢 <b>3km</b> <span>|</span> 🟡 <b>5km</b>
+            </div>
         </div>
     </div>
 
-    <!-- FAB -->
     <button class="fab" onclick="openAddRestaurant()"><i class="fa-solid fa-plus"></i></button>
-
-    <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
-    <!-- MODALS -->
     <!-- Auth Modal -->
     <div class="modal-overlay" id="authModal">
         <div class="modal">
@@ -285,9 +260,7 @@
                 <i class="fa-solid fa-user-secret"></i>
                 <div><strong>익명으로 시작하기</strong><br><span style="font-size:11px;color:var(--text2)">별명으로 활동, 언제든 계정 연동 가능</span></div>
             </div>
-            <p style="margin-top:12px;font-size:11px;color:#888">
-                ⚡ 지금은 <strong>로컬 모드</strong>로 동작해요. Firebase 연동은 아래 가이드를 참고하세요.
-            </p>
+            <p style="margin-top:12px;font-size:11px;color:#888">⚡ 현재 로컬 모드로 동작해요.</p>
         </div>
     </div>
 
@@ -296,42 +269,17 @@
         <div class="modal">
             <button class="close-btn" onclick="closeModal('addModal')"><i class="fa-solid fa-xmark"></i></button>
             <h2><i class="fa-solid fa-store"></i> 새 맛집 추가</h2>
-            <div class="form-group">
-                <label>🍜 식당 이름 *</label>
-                <input type="text" id="addName" placeholder="ex) 영남반점">
-            </div>
-            <div class="form-group">
-                <label>📍 주소 / 위치 설명</label>
-                <input type="text" id="addAddr" placeholder="ex) 경산시 대동 123-4">
-            </div>
-            <div class="form-group">
-                <label>🍽 대표 메뉴</label>
-                <input type="text" id="addMenu" placeholder="ex) 짜장면 6,000원">
-            </div>
-            <div class="form-group">
-                <label>💰 가격대</label>
-                <select id="addPrice">
-                    <option value="">선택</option>
-                    <option value="만원 미만">만원 미만</option>
-                    <option value="1~2만원">1~2만원</option>
-                    <option value="2~3만원">2~3만원</option>
-                    <option value="3만원 이상">3만원 이상</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>🧑‍🍳 혼밥 가능?</label>
-                <select id="addSolo">
-                    <option value="yes">✅ 혼밥 OK</option>
-                    <option value="maybe">🤔 보통</option>
-                    <option value="no">❌ 혼밥 어려움</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>📸 사진 URL (선택)</label>
-                <input type="text" id="addPhoto" placeholder="https://...">
-            </div>
-            <div class="form-group">
-                <label>⭐ 내 평점</label>
+            <div class="form-group"><label>🍜 식당 이름 *</label><input type="text" id="addName" placeholder="ex) 영남반점"></div>
+            <div class="form-group"><label>📍 주소 / 위치 설명</label><input type="text" id="addAddr" placeholder="ex) 경산시 대동 123-4"></div>
+            <div class="form-group"><label>🍽 대표 메뉴</label><input type="text" id="addMenu" placeholder="ex) 짜장면 6,000원"></div>
+            <div class="form-group"><label>💰 가격대</label><select id="addPrice">
+                <option value="">선택</option><option value="만원 미만">만원 미만</option><option value="1~2만원">1~2만원</option><option value="2~3만원">2~3만원</option><option value="3만원 이상">3만원 이상</option>
+            </select></div>
+            <div class="form-group"><label>🧑‍🍳 혼밥 가능?</label><select id="addSolo">
+                <option value="yes">✅ 혼밥 OK</option><option value="maybe">🤔 보통</option><option value="no">❌ 혼밥 어려움</option>
+            </select></div>
+            <div class="form-group"><label>📸 사진 URL (선택)</label><input type="text" id="addPhoto" placeholder="https://..."></div>
+            <div class="form-group"><label>⭐ 내 평점</label>
                 <div class="star-rating" id="addStars">
                     <i class="fa-solid fa-star" data-star="1" onclick="setAddRating(1)"></i>
                     <i class="fa-solid fa-star" data-star="2" onclick="setAddRating(2)"></i>
@@ -340,14 +288,8 @@
                     <i class="fa-solid fa-star" data-star="5" onclick="setAddRating(5)"></i>
                 </div>
             </div>
-            <div class="form-group">
-                <label>📝 한줄평</label>
-                <textarea id="addReview" placeholder="이 식당 어땠나요?"></textarea>
-            </div>
-            <div class="form-group">
-                <label>📍 지도상 위치 (위도, 경도)</label>
-                <input type="text" id="addCoords" placeholder="35.8314, 128.7547 (정문 근처면 기본값 사용)">
-            </div>
+            <div class="form-group"><label>📝 한줄평</label><textarea id="addReview" placeholder="이 식당 어땠나요?"></textarea></div>
+            <div class="form-group"><label>📍 지도상 위치 (위도, 경도)</label><input type="text" id="addCoords" placeholder="35.8314, 128.7547"></div>
             <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="submitRestaurant()">
                 <i class="fa-solid fa-check"></i> 맛집 등록하기
             </button>
@@ -365,10 +307,29 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script>
-    // ===== CONSTANTS =====
-    const MAIN_GATE = [35.8316, 128.7533]; // 영남대 정문 (대동)
-    const BACK_GATE = [35.8290, 128.7595]; // 영남대 후문 (삼풍동)
+    // ===== CAMPUS POLYGON =====
+    const CAMPUS_POLYGON = [
+        [35.8352, 128.7465], // 북서쪽 (정문 위쪽)
+        [35.8358, 128.7495], // 북쪽
+        [35.8360, 128.7528], // 북동쪽
+        [35.8350, 128.7550], // 동북쪽
+        [35.8333, 128.7570], // 동쪽 (운동장 방면)
+        [35.8312, 128.7585], // 동남쪽
+        [35.8285, 128.7595], // 후문 아래
+        [35.8268, 128.7588], // 남동쪽
+        [35.8258, 128.7560], // 남쪽
+        [35.8250, 128.7525], // 남서쪽
+        [35.8252, 128.7490], // 서남쪽
+        [35.8265, 128.7465], // 서쪽
+        [35.8288, 128.7448], // 북서쪽 (정문 왼쪽)
+        [35.8320, 128.7450], // 정문 왼쪽 위
+        [35.8352, 128.7465]  // 닫기
+    ];
+
+    // Campus center for initial view
+    const CAMPUS_CENTER = [35.8305, 128.7520];
 
     const RANKS = [
         { min: 0,  icon: '🌱', name: '새내기 미식가', lv: 1 },
@@ -378,31 +339,28 @@
         { min: 50, icon: '🏆', name: '영남대 미식왕', lv: 5 },
     ];
 
-    // ===== GLOBAL STATE =====
-    let currentGate = 'main';
+    // ===== STATE =====
     let currentDist = 1;
-    let addRating = 0;
     let restaurants = loadFromStorage('ynu_restaurants', defaultRestaurants());
     let reviews = loadFromStorage('ynu_reviews', {});
     let user = loadFromStorage('ynu_user', { name: '익명', email: null, provider: 'anonymous', photo: null, reviews: 0 });
 
-    // ===== DEFAULT RESTAURANTS =====
     function defaultRestaurants() {
         return [
-            { id:1, name:'김밥천국 영남대점', lat:35.8320, lng:128.7530, menu:'김밥 3,500원', price:'만원 미만', solo:'yes', addr:'경산시 대동 214-1', gate:'main', tags:'분식|김밥|라면', photo:null },
-            { id:2, name:'명동칼국수', lat:35.8318, lng:128.7525, menu:'칼국수 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 198-7', gate:'main', tags:'칼국수|만두', photo:null },
-            { id:3, name:'영남반점', lat:35.8315, lng:128.7530, menu:'짜장면 7,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 220-3', gate:'main', tags:'중식|짜장면|짬뽕', photo:null },
-            { id:4, name:'돈까스클럽', lat:35.8319, lng:128.7528, menu:'등심돈까스 9,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 215', gate:'main', tags:'돈까스|일식', photo:null },
-            { id:5, name:'맘스터치 영남대점', lat:35.8314, lng:128.7527, menu:'싸이버거 4,900원', price:'만원 미만', solo:'yes', addr:'경산시 대동 230', gate:'main', tags:'버거|치킨|패스트푸드', photo:null },
-            { id:6, name:'서브웨이 영남대점', lat:35.8313, lng:128.7528, menu:'이탈리안BMT 7,200원', price:'만원 미만', solo:'yes', addr:'경산시 대동 231', gate:'main', tags:'샌드위치|건강식', photo:null },
-            { id:7, name:'한솥도시락 영대후문', lat:35.8292, lng:128.7590, menu:'돈까스도련님 5,500원', price:'만원 미만', solo:'yes', addr:'경산시 삼풍동 509-1', gate:'back', tags:'도시락|가성비', photo:null },
-            { id:8, name:'엽기떡볶이 영남대', lat:35.8295, lng:128.7588, menu:'엽떡 14,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 495', gate:'back', tags:'떡볶이|매운맛', photo:null },
-            { id:9, name:'BBQ 영남대후문점', lat:35.8290, lng:128.7593, menu:'황금올리브 20,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 480', gate:'back', tags:'치킨|배달', photo:null },
-            { id:10, name:'60계치킨 경산영대', lat:35.8293, lng:128.7585, menu:'후라이드 17,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 478', gate:'back', tags:'치킨|양념', photo:null },
-            { id:11, name:'경산시장 국밥거리', lat:35.8250, lng:128.7430, menu:'돼지국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 시장', gate:'main', tags:'국밥|시장|전통', photo:null },
-            { id:12, name:'도쿄스테이크', lat:35.8270, lng:128.7410, menu:'스테이크 정식 18,000원', price:'1~2만원', solo:'yes', addr:'경산시 계양동', gate:'main', tags:'스테이크|일식', photo:null },
-            { id:13, name:'하양 장터국밥', lat:35.8400, lng:128.7700, menu:'순대국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 하양읍', gate:'back', tags:'국밥|순대', photo:null },
-            { id:14, name:'중방동 순대국', lat:35.8220, lng:128.7390, menu:'순대국 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동', gate:'main', tags:'순대국|전통', photo:null },
+            { id:1, name:'김밥천국 영남대점', lat:35.8320, lng:128.7530, menu:'김밥 3,500원', price:'만원 미만', solo:'yes', addr:'경산시 대동 214-1', tags:'분식|김밥|라면', photo:null },
+            { id:2, name:'명동칼국수', lat:35.8318, lng:128.7525, menu:'칼국수 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 198-7', tags:'칼국수|만두', photo:null },
+            { id:3, name:'영남반점', lat:35.8315, lng:128.7530, menu:'짜장면 7,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 220-3', tags:'중식|짜장면|짬뽕', photo:null },
+            { id:4, name:'돈까스클럽', lat:35.8319, lng:128.7528, menu:'등심돈까스 9,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 215', tags:'돈까스|일식', photo:null },
+            { id:5, name:'맘스터치 영남대점', lat:35.8314, lng:128.7527, menu:'싸이버거 4,900원', price:'만원 미만', solo:'yes', addr:'경산시 대동 230', tags:'버거|치킨|패스트푸드', photo:null },
+            { id:6, name:'서브웨이 영남대점', lat:35.8313, lng:128.7528, menu:'이탈리안BMT 7,200원', price:'만원 미만', solo:'yes', addr:'경산시 대동 231', tags:'샌드위치|건강식', photo:null },
+            { id:7, name:'한솥도시락 영대후문', lat:35.8292, lng:128.7590, menu:'돈까스도련님 5,500원', price:'만원 미만', solo:'yes', addr:'경산시 삼풍동 509-1', tags:'도시락|가성비', photo:null },
+            { id:8, name:'엽기떡볶이 영남대', lat:35.8295, lng:128.7588, menu:'엽떡 14,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 495', tags:'떡볶이|매운맛', photo:null },
+            { id:9, name:'BBQ 영남대후문점', lat:35.8290, lng:128.7593, menu:'황금올리브 20,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 480', tags:'치킨|배달', photo:null },
+            { id:10, name:'60계치킨 경산영대', lat:35.8293, lng:128.7585, menu:'후라이드 17,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 478', tags:'치킨|양념', photo:null },
+            { id:11, name:'경산시장 국밥거리', lat:35.8250, lng:128.7430, menu:'돼지국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 시장', tags:'국밥|시장|전통', photo:null },
+            { id:12, name:'도쿄스테이크', lat:35.8270, lng:128.7410, menu:'스테이크 정식 18,000원', price:'1~2만원', solo:'yes', addr:'경산시 계양동', tags:'스테이크|일식', photo:null },
+            { id:13, name:'하양 장터국밥', lat:35.8400, lng:128.7700, menu:'순대국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 하양읍', tags:'국밥|순대', photo:null },
+            { id:14, name:'중방동 순대국', lat:35.8220, lng:128.7390, menu:'순대국 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동', tags:'순대국|전통', photo:null },
         ];
     }
 
@@ -413,26 +371,75 @@
         catch(e) { return fallback; }
     }
 
+    // ===== DISTANCE TO POLYGON =====
+    function distanceToPolygon(lat, lng, polygon) {
+        const pt = turf.point([lng, lat]);
+        const poly = turf.polygon([polygon.map(p => [p[1], p[0]])]); // swap to [lng,lat]
+        // Find nearest point on polygon
+        const nearest = turf.nearestPointOnLine(turf.polygonToLine(poly), pt);
+        const distKm = turf.distance(pt, nearest, {units: 'kilometers'});
+        // If point is inside polygon, return 0
+        if (turf.booleanPointInPolygon(pt, poly)) return 0;
+        return distKm;
+    }
+
     // ===== MAP =====
-    const map = L.map('map', { zoomControl: true }).setView(MAIN_GATE, 16);
+    const map = L.map('map', { zoomControl: true }).setView(CAMPUS_CENTER, 15);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap | 🍜 YNU FoodMap',
         maxZoom: 19
     }).addTo(map);
 
-    let markers = [];
-    let gateMarkerMain = L.marker(MAIN_GATE, {icon: gateIcon('blue')}).addTo(map)
-        .bindPopup('<b>🏫 영남대 정문</b><br>대학로 280, 대동');
-    let gateMarkerBack = L.marker(BACK_GATE, {icon: gateIcon('red')}).addTo(map)
-        .bindPopup('<b>🏫 영남대 후문</b><br>삼풍로, 천마아트센터 방면');
+    // Draw campus polygon
+    const campusLayer = L.polygon(CAMPUS_POLYGON, {
+        color: '#ff6b35',
+        fillColor: '#ff6b35',
+        fillOpacity: 0.12,
+        weight: 2,
+        dashArray: null
+    }).addTo(map).bindPopup('<b>🏫 영남대학교 캠퍼스</b><br>경산시 대학로 280');
 
-    function gateIcon(color) {
-        return L.divIcon({
-            className: '', html: `<div style="background:${color==='blue'?'#4a8aff':'#ff4757'};color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.3)">🏫 ${color==='blue'?'정문':'후문'}</div>`,
-            iconSize: [60, 24], iconAnchor: [30, 12]
+    // Draw buffer polygons
+    let bufferLayers = [];
+    function updateBuffers() {
+        bufferLayers.forEach(l => map.removeLayer(l));
+        bufferLayers = [];
+
+        const poly = turf.polygon([CAMPUS_POLYGON.map(p => [p[1], p[0]])]);
+
+        // Show the selected buffer highlighted
+        try {
+            const buf = turf.buffer(poly, currentDist, {units: 'kilometers', steps: 32});
+            const coords = buf.geometry.coordinates[0].map(c => [c[1], c[0]]); // back to [lat,lng]
+            const layer = L.polygon(coords, {
+                color: '#4a8aff',
+                fillColor: '#4a8aff',
+                fillOpacity: 0.06,
+                weight: 1.5,
+                dashArray: '6 4'
+            }).addTo(map);
+            bufferLayers.push(layer);
+        } catch(e) { console.log('Buffer error:', e); }
+
+        // Draw all buffers faintly
+        [1,3,5].forEach(dist => {
+            if (dist === currentDist) return;
+            try {
+                const buf = turf.buffer(poly, dist, {units: 'kilometers', steps: 32});
+                const coords = buf.geometry.coordinates[0].map(c => [c[1], c[0]]);
+                const layer = L.polygon(coords, {
+                    color: '#555',
+                    fillColor: '#555',
+                    fillOpacity: 0.02,
+                    weight: 0.5,
+                    dashArray: '3 8'
+                }).addTo(map);
+                bufferLayers.push(layer);
+            } catch(e) {}
         });
     }
 
+    let markers = [];
     function foodIcon(rating) {
         const color = rating >= 4 ? '#ff6b35' : rating >= 3 ? '#f7c948' : '#8892b0';
         return L.divIcon({
@@ -444,7 +451,6 @@
     function updateMarkers() {
         markers.forEach(m => map.removeLayer(m));
         markers = [];
-        const gate = currentGate === 'main' ? MAIN_GATE : BACK_GATE;
         const filtered = filterRestaurants();
 
         filtered.forEach(r => {
@@ -457,48 +463,36 @@
                         <p style="margin:2px 0"><b>💰</b> ${r.price}</p>
                         <p style="margin:2px 0"><b>⭐</b> ${avgRating(r.id).toFixed(1)} (${reviewCount(r.id)}개)</p>
                         <p style="margin:2px 0">${r.solo==='yes'?'✅ 혼밥OK':r.solo==='maybe'?'🤔보통':'❌ 혼밥 어려움'}</p>
+                        <p style="margin:2px 0;font-size:11px;color:#888">📍 학교 밖 ${distLabel(r)}</p>
                         <button onclick="openDetail(${r.id})" style="background:#ff6b35;color:#fff;border:none;padding:4px 10px;border-radius:4px;font-size:11px;cursor:pointer;margin-top:4px">자세히 보기</button>
                     </div>`);
             markers.push(marker);
         });
+    }
 
-        // Draw radius circle
-        if (window._radiusCircle) map.removeLayer(window._radiusCircle);
-        window._radiusCircle = L.circle(gate, { radius: currentDist * 1000, color: '#ff6b35', fillColor: '#ff6b35', fillOpacity: 0.05, weight: 1, dashArray: '5 5' }).addTo(map);
+    function distLabel(r) {
+        const d = distanceToPolygon(r.lat, r.lng, CAMPUS_POLYGON);
+        if (d === 0) return '캠퍼스 내';
+        if (d < 0.5) return `${(d*1000).toFixed(0)}m`;
+        return `${d.toFixed(1)}km`;
     }
 
     // ===== FILTERS =====
-    function setGate(gate) {
-        currentGate = gate;
-        document.querySelectorAll('#gateFilters .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.gate === gate));
-        const center = gate === 'main' ? MAIN_GATE : BACK_GATE;
-        map.setView(center, 16);
-        renderAll();
-    }
-
     function setDist(dist) {
         currentDist = dist;
         document.querySelectorAll('#distFilters .filter-chip').forEach(b => b.classList.toggle('active', +b.dataset.dist === dist));
+        updateBuffers();
         renderAll();
     }
 
     function filterRestaurants() {
-        const gate = currentGate === 'main' ? MAIN_GATE : BACK_GATE;
         const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
         return restaurants.filter(r => {
-            const d = haversine(gate[0], gate[1], r.lat, r.lng);
-            const inRange = d <= currentDist * 1.15;
+            const d = distanceToPolygon(r.lat, r.lng, CAMPUS_POLYGON);
+            const inRange = d <= currentDist;
             const matchesSearch = !term || r.name.toLowerCase().includes(term) || r.menu.toLowerCase().includes(term) || (r.tags||'').includes(term);
             return inRange && matchesSearch;
         });
-    }
-
-    function haversine(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2-lat1)*Math.PI/180;
-        const dLon = (lon2-lon1)*Math.PI/180;
-        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
     function doSearch() { renderAll(); }
@@ -512,21 +506,19 @@
     function reviewCount(restId) { return (reviews[restId] || []).length; }
 
     // ===== RENDER =====
-    function renderAll() {
-        updateMarkers();
-        renderList();
-    }
+    function renderAll() { updateMarkers(); renderList(); }
 
     function renderList() {
         const list = document.getElementById('restaurantList');
         const filtered = filterRestaurants();
         if (!filtered.length) {
-            list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i>검색 결과가 없어요<br><span style="font-size:12px">거리나 검색어를 바꿔보세요!</span></div>`;
+            list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i>이 거리에는 맛집이 없어요<br><span style="font-size:12px">거리를 넓히거나 새 맛집을 추가해보세요!</span></div>`;
             return;
         }
         list.innerHTML = filtered.map(r => {
             const avg = avgRating(r.id);
             const cnt = reviewCount(r.id);
+            const d = distanceToPolygon(r.lat, r.lng, CAMPUS_POLYGON);
             const stars = avg > 0 ? '⭐'.repeat(Math.round(avg)) + ` ${avg.toFixed(1)}` : '尚无评分';
             return `
             <div class="restaurant-card" onclick="openDetail(${r.id})">
@@ -537,6 +529,7 @@
                 </div>
                 <div class="meta" style="margin-top:2px">
                     <span><i class="fa-solid fa-star" style="color:var(--accent2)"></i> ${stars} (${cnt}리뷰)</span>
+                    <span><i class="fa-solid fa-location-dot"></i> ${distLabel(r)}</span>
                 </div>
                 <div class="tags">
                     ${r.solo==='yes'?'<span class="tag solo">✅ 혼밥OK</span>':r.solo==='maybe'?'<span class="tag budget">🤔 보통</span>':''}
@@ -550,12 +543,14 @@
         const r = restaurants.find(x => x.id === id); if (!r) return;
         const rs = reviews[id] || [];
         const avg = avgRating(id);
+        const d = distanceToPolygon(r.lat, r.lng, CAMPUS_POLYGON);
         document.getElementById('detailContent').innerHTML = `
             <button class="close-btn" onclick="closeModal('detailModal')"><i class="fa-solid fa-xmark"></i></button>
             <h2>🍜 ${r.name}</h2>
             ${r.photo ? `<img src="${r.photo}" style="width:100%;border-radius:12px;margin-bottom:12px;max-height:200px;object-fit:cover">` : ''}
             <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;margin-bottom:12px">
                 <div><b>📍</b> ${r.addr}</div>
+                <div><b>🏫</b> 캠퍼스에서 ${distLabel(r)}</div>
                 <div><b>🍽</b> ${r.menu}</div>
                 <div><b>💰</b> ${r.price}</div>
                 <div><b>🧑‍🍳</b> ${r.solo==='yes'?'✅ 혼밥 OK':r.solo==='maybe'?'🤔 혼밥 보통':'❌ 혼밥 어려움'}</div>
@@ -587,7 +582,6 @@
         document.getElementById('detailModal').classList.add('open');
     }
 
-    let reviewRating = 0;
     function setReviewRating(n) {
         window._reviewRating = n;
         document.querySelectorAll('#reviewStars i').forEach((s,i) => s.classList.toggle('active', i < n));
@@ -612,48 +606,33 @@
     }
 
     // ===== ADD RESTAURANT =====
-    function openAddRestaurant() {
-        document.getElementById('addModal').classList.add('open');
-        window._addRating = 0;
-        document.querySelectorAll('#addStars i').forEach(s => s.classList.remove('active'));
-    }
-    function setAddRating(n) {
-        window._addRating = n;
-        document.querySelectorAll('#addStars i').forEach((s,i) => s.classList.toggle('active', i < n));
-    }
+    function openAddRestaurant() { document.getElementById('addModal').classList.add('open'); window._addRating = 0; document.querySelectorAll('#addStars i').forEach(s => s.classList.remove('active')); }
+    function setAddRating(n) { window._addRating = n; document.querySelectorAll('#addStars i').forEach((s,i) => s.classList.toggle('active', i < n)); }
 
     function submitRestaurant() {
         const name = document.getElementById('addName').value.trim();
         if (!name) return toastMsg('식당 이름을 입력해주세요!');
-        const gate = currentGate;
-        const center = gate === 'main' ? MAIN_GATE : BACK_GATE;
-        let lat = center[0] + (Math.random() - 0.5) * 0.005;
-        let lng = center[1] + (Math.random() - 0.5) * 0.005;
+        let lat = CAMPUS_CENTER[0] + (Math.random() - 0.5) * 0.008;
+        let lng = CAMPUS_CENTER[1] + (Math.random() - 0.5) * 0.008;
         const coordsStr = document.getElementById('addCoords').value.trim();
         if (coordsStr) {
             const parts = coordsStr.split(',').map(Number);
             if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) { lat = parts[0]; lng = parts[1]; }
         }
         const newR = {
-            id: Date.now(), name,
-            lat, lng,
+            id: Date.now(), name, lat, lng,
             menu: document.getElementById('addMenu').value.trim() || '메뉴 정보 없음',
             price: document.getElementById('addPrice').value || '',
             solo: document.getElementById('addSolo').value || 'maybe',
             addr: document.getElementById('addAddr').value.trim() || '',
-            tags: '',
-            gate,
-            photo: document.getElementById('addPhoto').value.trim() || null
+            tags: '', photo: document.getElementById('addPhoto').value.trim() || null
         };
         restaurants.push(newR);
         saveToStorage('ynu_restaurants', restaurants);
-
-        // Also add as a review
         if (window._addRating > 0) {
             if (!reviews[newR.id]) reviews[newR.id] = [];
             reviews[newR.id].push({
-                user: user.name || '익명',
-                rating: window._addRating,
+                user: user.name || '익명', rating: window._addRating,
                 text: document.getElementById('addReview').value.trim() || '',
                 date: new Date().toISOString().slice(0,10)
             });
@@ -661,15 +640,11 @@
             user.reviews = (user.reviews||0) + 1;
             saveToStorage('ynu_user', user);
         }
-
         closeModal('addModal');
         renderAll();
         updateUserUI();
         toastMsg(`🎉 "${name}" 등록 완료!`);
-        // Clear form
-        ['addName','addAddr','addMenu','addPhoto','addReview','addCoords'].forEach(id => {
-            const el = document.getElementById(id); if (el) el.value = '';
-        });
+        ['addName','addAddr','addMenu','addPhoto','addReview','addCoords'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
         window._addRating = 0;
         document.querySelectorAll('#addStars i').forEach(s => s.classList.remove('active'));
     }
@@ -680,7 +655,6 @@
         if (provider === 'anonymous') {
             user = { name: '익명', email: null, provider: 'anonymous', photo: null, reviews: user.reviews||0 };
         } else {
-            // Simulated Google/Apple login (in real app, Firebase handles this)
             const mockName = provider === 'google' ? 'chunga.ryu@gmail.com' : 'apple_user@icloud.com';
             user = { name: mockName.split('@')[0], email: mockName, provider, photo: null, reviews: user.reviews||0 };
         }
@@ -689,30 +663,22 @@
         updateUserUI();
         toastMsg(`✅ ${provider === 'anonymous' ? '익명' : provider} 로그인 완료!`);
     }
-
     function updateUserUI() {
         const badge = document.getElementById('userBadge');
         const loginBtn = document.getElementById('loginBtn');
         const loggedIn = user.email || user.provider !== 'anonymous';
-        if (loggedIn) {
-            loginBtn.style.display = 'none';
-            badge.style.display = 'flex';
-        } else {
-            loginBtn.style.display = '';
-            badge.style.display = 'none';
-        }
+        loginBtn.style.display = loggedIn ? 'none' : '';
+        badge.style.display = loggedIn ? 'flex' : 'none';
         const rank = getRank(user.reviews || 0);
         document.getElementById('displayName').textContent = user.email ? user.email.split('@')[0] : '익명';
         document.getElementById('rankShort').textContent = rank.icon + ' ' + rank.name;
         document.getElementById('avatarIcon').textContent = rank.icon;
     }
-
     function getRank(count) {
         let r = RANKS[0];
         for (let i = RANKS.length-1; i >= 0; i--) { if (count >= RANKS[i].min) { r = RANKS[i]; break; } }
         return r;
     }
-
     function openProfile() {
         const rank = getRank(user.reviews || 0);
         const nextRank = RANKS.find(r => r.min > (user.reviews||0));
@@ -723,44 +689,23 @@
                 <div style="font-size:48px">${rank.icon}</div>
                 <div style="font-size:18px;font-weight:700;margin-top:8px">${user.email ? user.email.split('@')[0] : '익명'}</div>
                 <div class="rank-badge lv${rank.lv}"><i class="fa-solid fa-crown"></i> ${rank.name}</div>
-                <div style="margin-top:12px;font-size:14px;color:var(--text2)">
-                    📝 작성한 리뷰: <strong>${user.reviews || 0}개</strong>
-                </div>
+                <div style="margin-top:12px;font-size:14px;color:var(--text2)">📝 작성한 리뷰: <strong>${user.reviews || 0}개</strong></div>
                 ${nextRank ? `<div style="margin-top:8px;font-size:12px;color:var(--accent2)">다음 랭크까지 ${nextRank.min - (user.reviews||0)}개 남았어요!</div>` : '<div style="margin-top:8px;font-size:12px;color:#ffd700">🏆 최고 랭크 달성!</div>'}
             </div>
-            <button class="btn btn-outline" style="width:100%;justify-content:center;margin-top:12px" onclick="logout()">
-                <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
-            </button>
+            <button class="btn btn-outline" style="width:100%;justify-content:center;margin-top:12px" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> 로그아웃</button>
         `;
         document.getElementById('profileModal').classList.add('open');
     }
-
-    function logout() {
-        user = { name: '익명', email: null, provider: 'anonymous', photo: null, reviews: 0 };
-        saveToStorage('ynu_user', user);
-        closeModal('profileModal');
-        updateUserUI();
-        toastMsg('로그아웃 했어요');
-    }
+    function logout() { user = { name: '익명', email: null, provider: 'anonymous', photo: null, reviews: 0 }; saveToStorage('ynu_user', user); closeModal('profileModal'); updateUserUI(); toastMsg('로그아웃 했어요'); }
 
     // ===== UTILS =====
-    function closeModal(id) {
-        document.getElementById(id)?.classList.remove('open');
-    }
-    function toastMsg(msg) {
-        const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2500);
-    }
-
-    // Close modals on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', function(e) {
-            if (e.target === this) this.classList.remove('open');
-        });
-    });
+    function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+    function toastMsg(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
+    document.querySelectorAll('.modal-overlay').forEach(overlay => overlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); }));
 
     // ===== INIT =====
     updateUserUI();
+    updateBuffers();
     renderAll();
     </script>
 </body>
