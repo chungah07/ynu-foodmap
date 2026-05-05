@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영남대 맛집지도 🍜 - YNU FoodMap</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --card: #16213e;
+            --accent: #ff6b35;
+            --accent2: #f7c948;
+            --text: #e8e8f0;
+            --text2: #8892b0;
+            --border: #2a2a4a;
+            --green: #4caf50;
+            --red: #f44336;
+            --blue: #4a8aff;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg); color: var(--text);
+            height: 100vh; overflow: hidden;
+        }
+
+        /* HEADER */
+        .header {
+            height: 56px; background: var(--card); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; padding: 0 16px; z-index: 1000;
+            justify-content: space-between; position: relative;
+        }
+        .header .logo { font-size: 20px; font-weight: 700; color: var(--accent); }
+        .header .logo i { margin-right: 6px; }
+        .header .auth-area { display: flex; gap: 8px; align-items: center; }
+        .btn {
+            padding: 8px 14px; border: none; border-radius: 8px; font-size: 13px;
+            font-weight: 600; cursor: pointer; transition: all 0.15s; display: flex;
+            align-items: center; gap: 6px;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: #ff7f50; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .btn-sm { padding: 6px 10px; font-size: 11px; border-radius: 6px; }
+        .user-badge {
+            display: flex; align-items: center; gap: 6px; padding: 4px 10px;
+            background: rgba(255,107,53,0.15); border-radius: 20px; cursor: pointer;
+        }
+        .user-badge .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; }
+        .user-badge .rank { font-size: 11px; color: var(--accent2); }
+
+        /* MAIN LAYOUT */
+        .main { display: flex; height: calc(100vh - 56px); position: relative; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 380px; min-width: 380px; background: var(--card);
+            border-right: 1px solid var(--border); display: flex; flex-direction: column;
+            overflow: hidden; z-index: 100;
+        }
+        .sidebar .filters {
+            padding: 12px; border-bottom: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .filter-row {
+            display: flex; gap: 6px; flex-wrap: wrap;
+        }
+        .filter-chip {
+            padding: 6px 14px; border: 1px solid var(--border); border-radius: 20px;
+            font-size: 12px; font-weight: 600; cursor: pointer; background: var(--bg);
+            color: var(--text2); transition: all 0.15s; white-space: nowrap;
+        }
+        .filter-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+        .filter-chip:hover:not(.active) { border-color: #555; color: var(--text); }
+        .search-box {
+            display: flex; gap: 6px;
+        }
+        .search-box input {
+            flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+            background: var(--bg); color: var(--text); font-size: 13px; outline: none;
+        }
+        .search-box input:focus { border-color: var(--accent); }
+        .restaurant-list {
+            flex: 1; overflow-y: auto; padding: 8px 12px;
+        }
+        .restaurant-list::-webkit-scrollbar { width: 4px; }
+        .restaurant-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .restaurant-card {
+            background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+            padding: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
+        }
+        .restaurant-card:hover { border-color: var(--accent); background: #1f1f3a; }
+        .restaurant-card .name { font-size: 15px; font-weight: 700; color: var(--text); }
+        .restaurant-card .meta {
+            display: flex; gap: 10px; margin-top: 4px; font-size: 12px; color: var(--text2);
+            flex-wrap: wrap;
+        }
+        .restaurant-card .meta i { margin-right: 3px; }
+        .restaurant-card .tags { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+        .tag {
+            padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600;
+        }
+        .tag.solo { background: rgba(76,175,80,0.15); color: var(--green); }
+        .tag.budget { background: rgba(247,201,72,0.15); color: var(--accent2); }
+
+        /* MAP */
+        .map-container { flex: 1; position: relative; }
+        #map { width: 100%; height: 100%; }
+        .leaflet-popup .popup-content { font-family: 'Segoe UI', sans-serif; }
+        .leaflet-popup .popup-content h3 { font-size: 14px; margin-bottom: 4px; }
+        .leaflet-popup .popup-content p { font-size: 11px; color: #666; margin: 2px 0; }
+
+        /* MODALS */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); z-index: 2000; display: none;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--card); border-radius: 16px; padding: 24px;
+            width: 100%; max-width: 460px; max-height: 85vh; overflow-y: auto;
+            border: 1px solid var(--border); position: relative;
+        }
+        .modal h2 { font-size: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .modal .close-btn {
+            position: absolute; top: 16px; right: 16px; background: none; border: none;
+            color: var(--text2); font-size: 20px; cursor: pointer;
+        }
+        .modal .close-btn:hover { color: var(--text); }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 4px; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+            background: var(--bg); color: var(--text); font-size: 14px; outline: none;
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+        .star-rating { display: flex; gap: 4px; cursor: pointer; }
+        .star-rating i { font-size: 24px; color: var(--border); transition: color 0.15s; }
+        .star-rating i.active { color: var(--accent2); }
+        .auth-provider {
+            display: flex; align-items: center; gap: 12px; padding: 14px;
+            border: 1px solid var(--border); border-radius: 10px; cursor: pointer;
+            margin-bottom: 8px; transition: all 0.15s;
+        }
+        .auth-provider:hover { background: var(--bg); border-color: var(--accent); }
+        .auth-provider i { font-size: 20px; }
+        .auth-provider.google i { color: #4285f4; }
+        .auth-provider.apple i { color: #fff; }
+        .auth-provider.anonymous i { color: var(--text2); }
+        .divider { text-align: center; color: var(--text2); font-size: 12px; margin: 12px 0; }
+
+        /* RANK BADGE */
+        .rank-badge {
+            display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 8px;
+        }
+        .rank-badge.lv1 { background: rgba(255,107,53,0.15); color: var(--accent); }
+        .rank-badge.lv2 { background: rgba(247,201,72,0.15); color: var(--accent2); }
+        .rank-badge.lv3 { background: rgba(76,175,80,0.15); color: var(--green); }
+        .rank-badge.lv4 { background: rgba(74,138,255,0.15); color: var(--blue); }
+        .rank-badge.lv5 { background: rgba(255,107,53,0.25); color: #ffd700; }
+        .rank-badge i { font-size: 10px; }
+
+        /* Review items */
+        .review-item {
+            background: var(--bg); border-radius: 8px; padding: 10px; margin-bottom: 8px;
+            border: 1px solid var(--border);
+        }
+        .review-item .reviewer { font-size: 12px; color: var(--accent); font-weight: 600; }
+        .review-item .review-text { font-size: 13px; margin: 4px 0; color: var(--text); }
+        .review-item .review-meta { font-size: 11px; color: var(--text2); }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 30px; color: var(--text2); }
+        .empty-state i { font-size: 40px; display: block; margin-bottom: 12px; }
+
+        /* FAB - add restaurant */
+        .fab {
+            position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px;
+            border-radius: 50%; background: var(--accent); color: #fff; font-size: 24px;
+            border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(255,107,53,0.4);
+            z-index: 1500; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .fab:hover { transform: scale(1.1); }
+        .fab:active { transform: scale(0.95); }
+
+        /* Toast */
+        .toast {
+            position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: #fff; padding: 10px 20px; border-radius: 8px;
+            font-size: 13px; font-weight: 600; z-index: 3000; opacity: 0;
+            transition: opacity 0.3s; pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; min-width: 100%; max-height: 45%; border-right: none; border-bottom: 1px solid var(--border); }
+            .main { flex-direction: column-reverse; }
+            .map-container { height: 55%; }
+            .fab { bottom: 16px; right: 16px; width: 48px; height: 48px; font-size: 20px; }
+            .modal { max-width: 100%; margin: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo"><i class="fa-solid fa-utensils"></i> YNU FoodMap</div>
+        <div class="auth-area" id="authArea">
+            <button class="btn btn-outline btn-sm" onclick="openAuth()" id="loginBtn">
+                <i class="fa-solid fa-right-to-bracket"></i> 로그인
+            </button>
+            <div class="user-badge" style="display:none" id="userBadge" onclick="openProfile()">
+                <div class="avatar" id="avatarIcon">👤</div>
+                <div>
+                    <div style="font-size:13px;font-weight:600" id="displayName">익명</div>
+                    <div class="rank" id="rankShort">새내기</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="filters">
+                <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:2px">📍 기준 위치</div>
+                <div class="filter-row" id="gateFilters">
+                    <button class="filter-chip active" data-gate="main" onclick="setGate('main')">정문 📍</button>
+                    <button class="filter-chip" data-gate="back" onclick="setGate('back')">후문 📍</button>
+                </div>
+                <div style="font-size:12px;color:var(--text2);font-weight:600;margin-bottom:2px">🔍 거리</div>
+                <div class="filter-row" id="distFilters">
+                    <button class="filter-chip active" data-dist="1" onclick="setDist(1)">1km</button>
+                    <button class="filter-chip" data-dist="3" onclick="setDist(3)">3km</button>
+                    <button class="filter-chip" data-dist="5" onclick="setDist(5)">5km</button>
+                </div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 식당 이름, 메뉴 검색..." oninput="doSearch()">
+                    <button class="btn btn-primary btn-sm" onclick="openAddRestaurant()">
+                        <i class="fa-solid fa-plus"></i> 추가
+                    </button>
+                </div>
+            </div>
+            <div class="restaurant-list" id="restaurantList"></div>
+        </div>
+
+        <!-- MAP -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- FAB -->
+    <button class="fab" onclick="openAddRestaurant()"><i class="fa-solid fa-plus"></i></button>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- MODALS -->
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeModal('authModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h2><i class="fa-solid fa-right-to-bracket"></i> 로그인 / 가입</h2>
+            <div class="auth-provider google" onclick="loginWith('google')">
+                <i class="fa-brands fa-google"></i>
+                <div><strong>Google 계정으로 계속</strong><br><span style="font-size:11px;color:var(--text2)">@gmail.com 계정 사용</span></div>
+            </div>
+            <div class="auth-provider apple" onclick="loginWith('apple')">
+                <i class="fa-brands fa-apple"></i>
+                <div><strong>Apple 계정으로 계속</strong><br><span style="font-size:11px;color:var(--text2)">Apple ID 사용</span></div>
+            </div>
+            <div class="divider">──── 또는 ────</div>
+            <div class="auth-provider anonymous" onclick="loginWith('anonymous')">
+                <i class="fa-solid fa-user-secret"></i>
+                <div><strong>익명으로 시작하기</strong><br><span style="font-size:11px;color:var(--text2)">별명으로 활동, 언제든 계정 연동 가능</span></div>
+            </div>
+            <p style="margin-top:12px;font-size:11px;color:#888">
+                ⚡ 지금은 <strong>로컬 모드</strong>로 동작해요. Firebase 연동은 아래 가이드를 참고하세요.
+            </p>
+        </div>
+    </div>
+
+    <!-- Add Restaurant Modal -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal">
+            <button class="close-btn" onclick="closeModal('addModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h2><i class="fa-solid fa-store"></i> 새 맛집 추가</h2>
+            <div class="form-group">
+                <label>🍜 식당 이름 *</label>
+                <input type="text" id="addName" placeholder="ex) 영남반점">
+            </div>
+            <div class="form-group">
+                <label>📍 주소 / 위치 설명</label>
+                <input type="text" id="addAddr" placeholder="ex) 경산시 대동 123-4">
+            </div>
+            <div class="form-group">
+                <label>🍽 대표 메뉴</label>
+                <input type="text" id="addMenu" placeholder="ex) 짜장면 6,000원">
+            </div>
+            <div class="form-group">
+                <label>💰 가격대</label>
+                <select id="addPrice">
+                    <option value="">선택</option>
+                    <option value="만원 미만">만원 미만</option>
+                    <option value="1~2만원">1~2만원</option>
+                    <option value="2~3만원">2~3만원</option>
+                    <option value="3만원 이상">3만원 이상</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>🧑‍🍳 혼밥 가능?</label>
+                <select id="addSolo">
+                    <option value="yes">✅ 혼밥 OK</option>
+                    <option value="maybe">🤔 보통</option>
+                    <option value="no">❌ 혼밥 어려움</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>📸 사진 URL (선택)</label>
+                <input type="text" id="addPhoto" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>⭐ 내 평점</label>
+                <div class="star-rating" id="addStars">
+                    <i class="fa-solid fa-star" data-star="1" onclick="setAddRating(1)"></i>
+                    <i class="fa-solid fa-star" data-star="2" onclick="setAddRating(2)"></i>
+                    <i class="fa-solid fa-star" data-star="3" onclick="setAddRating(3)"></i>
+                    <i class="fa-solid fa-star" data-star="4" onclick="setAddRating(4)"></i>
+                    <i class="fa-solid fa-star" data-star="5" onclick="setAddRating(5)"></i>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>📝 한줄평</label>
+                <textarea id="addReview" placeholder="이 식당 어땠나요?"></textarea>
+            </div>
+            <div class="form-group">
+                <label>📍 지도상 위치 (위도, 경도)</label>
+                <input type="text" id="addCoords" placeholder="35.8314, 128.7547 (정문 근처면 기본값 사용)">
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="submitRestaurant()">
+                <i class="fa-solid fa-check"></i> 맛집 등록하기
+            </button>
+        </div>
+    </div>
+
+    <!-- Restaurant Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal" id="detailContent"></div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal" id="profileContent"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    // ===== CONSTANTS =====
+    const MAIN_GATE = [35.8316, 128.7533]; // 영남대 정문 (대동)
+    const BACK_GATE = [35.8290, 128.7595]; // 영남대 후문 (삼풍동)
+
+    const RANKS = [
+        { min: 0,  icon: '🌱', name: '새내기 미식가', lv: 1 },
+        { min: 5,  icon: '🔍', name: '맛집 탐험가', lv: 2 },
+        { min: 15, icon: '⭐', name: '미식의 달인', lv: 3 },
+        { min: 30, icon: '👑', name: '푸드 마스터', lv: 4 },
+        { min: 50, icon: '🏆', name: '영남대 미식왕', lv: 5 },
+    ];
+
+    // ===== GLOBAL STATE =====
+    let currentGate = 'main';
+    let currentDist = 1;
+    let addRating = 0;
+    let restaurants = loadFromStorage('ynu_restaurants', defaultRestaurants());
+    let reviews = loadFromStorage('ynu_reviews', {});
+    let user = loadFromStorage('ynu_user', { name: '익명', email: null, provider: 'anonymous', photo: null, reviews: 0 });
+
+    // ===== DEFAULT RESTAURANTS =====
+    function defaultRestaurants() {
+        return [
+            { id:1, name:'김밥천국 영남대점', lat:35.8320, lng:128.7530, menu:'김밥 3,500원', price:'만원 미만', solo:'yes', addr:'경산시 대동 214-1', gate:'main', tags:'분식|김밥|라면', photo:null },
+            { id:2, name:'명동칼국수', lat:35.8318, lng:128.7525, menu:'칼국수 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 198-7', gate:'main', tags:'칼국수|만두', photo:null },
+            { id:3, name:'영남반점', lat:35.8315, lng:128.7530, menu:'짜장면 7,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 220-3', gate:'main', tags:'중식|짜장면|짬뽕', photo:null },
+            { id:4, name:'돈까스클럽', lat:35.8319, lng:128.7528, menu:'등심돈까스 9,000원', price:'만원 미만', solo:'yes', addr:'경산시 대동 215', gate:'main', tags:'돈까스|일식', photo:null },
+            { id:5, name:'맘스터치 영남대점', lat:35.8314, lng:128.7527, menu:'싸이버거 4,900원', price:'만원 미만', solo:'yes', addr:'경산시 대동 230', gate:'main', tags:'버거|치킨|패스트푸드', photo:null },
+            { id:6, name:'서브웨이 영남대점', lat:35.8313, lng:128.7528, menu:'이탈리안BMT 7,200원', price:'만원 미만', solo:'yes', addr:'경산시 대동 231', gate:'main', tags:'샌드위치|건강식', photo:null },
+            { id:7, name:'한솥도시락 영대후문', lat:35.8292, lng:128.7590, menu:'돈까스도련님 5,500원', price:'만원 미만', solo:'yes', addr:'경산시 삼풍동 509-1', gate:'back', tags:'도시락|가성비', photo:null },
+            { id:8, name:'엽기떡볶이 영남대', lat:35.8295, lng:128.7588, menu:'엽떡 14,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 495', gate:'back', tags:'떡볶이|매운맛', photo:null },
+            { id:9, name:'BBQ 영남대후문점', lat:35.8290, lng:128.7593, menu:'황금올리브 20,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 480', gate:'back', tags:'치킨|배달', photo:null },
+            { id:10, name:'60계치킨 경산영대', lat:35.8293, lng:128.7585, menu:'후라이드 17,000원', price:'1~2만원', solo:'maybe', addr:'경산시 삼풍동 478', gate:'back', tags:'치킨|양념', photo:null },
+            { id:11, name:'경산시장 국밥거리', lat:35.8250, lng:128.7430, menu:'돼지국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동 시장', gate:'main', tags:'국밥|시장|전통', photo:null },
+            { id:12, name:'도쿄스테이크', lat:35.8270, lng:128.7410, menu:'스테이크 정식 18,000원', price:'1~2만원', solo:'yes', addr:'경산시 계양동', gate:'main', tags:'스테이크|일식', photo:null },
+            { id:13, name:'하양 장터국밥', lat:35.8400, lng:128.7700, menu:'순대국밥 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 하양읍', gate:'back', tags:'국밥|순대', photo:null },
+            { id:14, name:'중방동 순대국', lat:35.8220, lng:128.7390, menu:'순대국 8,000원', price:'만원 미만', solo:'yes', addr:'경산시 중방동', gate:'main', tags:'순대국|전통', photo:null },
+        ];
+    }
+
+    // ===== STORAGE =====
+    function saveToStorage(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+    function loadFromStorage(key, fallback) {
+        try { let d = localStorage.getItem(key); return d ? JSON.parse(d) : fallback; }
+        catch(e) { return fallback; }
+    }
+
+    // ===== MAP =====
+    const map = L.map('map', { zoomControl: true }).setView(MAIN_GATE, 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap | 🍜 YNU FoodMap',
+        maxZoom: 19
+    }).addTo(map);
+
+    let markers = [];
+    let gateMarkerMain = L.marker(MAIN_GATE, {icon: gateIcon('blue')}).addTo(map)
+        .bindPopup('<b>🏫 영남대 정문</b><br>대학로 280, 대동');
+    let gateMarkerBack = L.marker(BACK_GATE, {icon: gateIcon('red')}).addTo(map)
+        .bindPopup('<b>🏫 영남대 후문</b><br>삼풍로, 천마아트센터 방면');
+
+    function gateIcon(color) {
+        return L.divIcon({
+            className: '', html: `<div style="background:${color==='blue'?'#4a8aff':'#ff4757'};color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.3)">🏫 ${color==='blue'?'정문':'후문'}</div>`,
+            iconSize: [60, 24], iconAnchor: [30, 12]
+        });
+    }
+
+    function foodIcon(rating) {
+        const color = rating >= 4 ? '#ff6b35' : rating >= 3 ? '#f7c948' : '#8892b0';
+        return L.divIcon({
+            className: '', html: `<div style="background:${color};color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.3);border:2px solid #fff">🍜</div>`,
+            iconSize: [30, 30], iconAnchor: [15, 15], popupAnchor: [0, -15]
+        });
+    }
+
+    function updateMarkers() {
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+        const gate = currentGate === 'main' ? MAIN_GATE : BACK_GATE;
+        const filtered = filterRestaurants();
+
+        filtered.forEach(r => {
+            const marker = L.marker([r.lat, r.lng], { icon: foodIcon(avgRating(r.id)) })
+                .addTo(map)
+                .bindPopup(`
+                    <div style="min-width:160px">
+                        <h3 style="color:#333;margin-bottom:4px">${r.name}</h3>
+                        <p style="margin:2px 0"><b>🍽</b> ${r.menu}</p>
+                        <p style="margin:2px 0"><b>💰</b> ${r.price}</p>
+                        <p style="margin:2px 0"><b>⭐</b> ${avgRating(r.id).toFixed(1)} (${reviewCount(r.id)}개)</p>
+                        <p style="margin:2px 0">${r.solo==='yes'?'✅ 혼밥OK':r.solo==='maybe'?'🤔보통':'❌ 혼밥 어려움'}</p>
+                        <button onclick="openDetail(${r.id})" style="background:#ff6b35;color:#fff;border:none;padding:4px 10px;border-radius:4px;font-size:11px;cursor:pointer;margin-top:4px">자세히 보기</button>
+                    </div>`);
+            markers.push(marker);
+        });
+
+        // Draw radius circle
+        if (window._radiusCircle) map.removeLayer(window._radiusCircle);
+        window._radiusCircle = L.circle(gate, { radius: currentDist * 1000, color: '#ff6b35', fillColor: '#ff6b35', fillOpacity: 0.05, weight: 1, dashArray: '5 5' }).addTo(map);
+    }
+
+    // ===== FILTERS =====
+    function setGate(gate) {
+        currentGate = gate;
+        document.querySelectorAll('#gateFilters .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.gate === gate));
+        const center = gate === 'main' ? MAIN_GATE : BACK_GATE;
+        map.setView(center, 16);
+        renderAll();
+    }
+
+    function setDist(dist) {
+        currentDist = dist;
+        document.querySelectorAll('#distFilters .filter-chip').forEach(b => b.classList.toggle('active', +b.dataset.dist === dist));
+        renderAll();
+    }
+
+    function filterRestaurants() {
+        const gate = currentGate === 'main' ? MAIN_GATE : BACK_GATE;
+        const term = (document.getElementById('searchInput')?.value || '').toLowerCase();
+        return restaurants.filter(r => {
+            const d = haversine(gate[0], gate[1], r.lat, r.lng);
+            const inRange = d <= currentDist * 1.15;
+            const matchesSearch = !term || r.name.toLowerCase().includes(term) || r.menu.toLowerCase().includes(term) || (r.tags||'').includes(term);
+            return inRange && matchesSearch;
+        });
+    }
+
+    function haversine(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2-lat1)*Math.PI/180;
+        const dLon = (lon2-lon1)*Math.PI/180;
+        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function doSearch() { renderAll(); }
+
+    // ===== AVERAGE RATING =====
+    function avgRating(restId) {
+        const r = reviews[restId] || [];
+        if (!r.length) return 0;
+        return r.reduce((s,x) => s + (x.rating||0), 0) / r.length;
+    }
+    function reviewCount(restId) { return (reviews[restId] || []).length; }
+
+    // ===== RENDER =====
+    function renderAll() {
+        updateMarkers();
+        renderList();
+    }
+
+    function renderList() {
+        const list = document.getElementById('restaurantList');
+        const filtered = filterRestaurants();
+        if (!filtered.length) {
+            list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i>검색 결과가 없어요<br><span style="font-size:12px">거리나 검색어를 바꿔보세요!</span></div>`;
+            return;
+        }
+        list.innerHTML = filtered.map(r => {
+            const avg = avgRating(r.id);
+            const cnt = reviewCount(r.id);
+            const stars = avg > 0 ? '⭐'.repeat(Math.round(avg)) + ` ${avg.toFixed(1)}` : '尚无评分';
+            return `
+            <div class="restaurant-card" onclick="openDetail(${r.id})">
+                <div class="name">${r.photo ? `<img src="${r.photo}" style="width:50px;height:50px;border-radius:8px;object-fit:cover;float:right;margin-left:8px">` : ''}${r.name}</div>
+                <div class="meta">
+                    <span><i class="fa-solid fa-utensils"></i> ${r.menu}</span>
+                    <span><i class="fa-solid fa-won-sign"></i> ${r.price}</span>
+                </div>
+                <div class="meta" style="margin-top:2px">
+                    <span><i class="fa-solid fa-star" style="color:var(--accent2)"></i> ${stars} (${cnt}리뷰)</span>
+                </div>
+                <div class="tags">
+                    ${r.solo==='yes'?'<span class="tag solo">✅ 혼밥OK</span>':r.solo==='maybe'?'<span class="tag budget">🤔 보통</span>':''}
+                    ${(r.tags||'').split('|').filter(Boolean).map(t=>`<span class="tag" style="background:rgba(74,138,255,0.1);color:var(--blue)">#${t}</span>`).join('')}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function openDetail(id) {
+        const r = restaurants.find(x => x.id === id); if (!r) return;
+        const rs = reviews[id] || [];
+        const avg = avgRating(id);
+        document.getElementById('detailContent').innerHTML = `
+            <button class="close-btn" onclick="closeModal('detailModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h2>🍜 ${r.name}</h2>
+            ${r.photo ? `<img src="${r.photo}" style="width:100%;border-radius:12px;margin-bottom:12px;max-height:200px;object-fit:cover">` : ''}
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;margin-bottom:12px">
+                <div><b>📍</b> ${r.addr}</div>
+                <div><b>🍽</b> ${r.menu}</div>
+                <div><b>💰</b> ${r.price}</div>
+                <div><b>🧑‍🍳</b> ${r.solo==='yes'?'✅ 혼밥 OK':r.solo==='maybe'?'🤔 혼밥 보통':'❌ 혼밥 어려움'}</div>
+                <div><b>⭐</b> ${avg > 0 ? '⭐'.repeat(Math.round(avg)) + ' ' + avg.toFixed(1) : '아직 평점 없음'} (${rs.length}개 리뷰)</div>
+            </div>
+            <div style="font-size:13px;color:var(--text2);margin-bottom:16px;font-weight:600">📝 리뷰 (${rs.length})</div>
+            ${rs.length ? rs.map(rv => `
+                <div class="review-item">
+                    <div class="reviewer">${rv.user || '익명'} ${'⭐'.repeat(rv.rating||0)}</div>
+                    <div class="review-text">${rv.text || ''}</div>
+                    <div class="review-meta">${rv.date || ''}</div>
+                </div>
+            `).join('') : '<div class="empty-state"><i class="fa-regular fa-comment"></i>첫 리뷰를 남겨보세요!</div>'}
+            <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+                <div class="form-group"><label>⭐ 별점</label>
+                    <div class="star-rating" id="reviewStars">
+                        ${[1,2,3,4,5].map(i=>`<i class="fa-solid fa-star" data-star="${i}" onclick="setReviewRating(${i})"></i>`).join('')}
+                    </div>
+                </div>
+                <div class="form-group"><label>📝 리뷰</label>
+                    <textarea id="reviewText" placeholder="맛, 분위기, 가격 등 자유롭게 남겨주세요!"></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%;justify-content:center;padding:10px" onclick="submitReview(${id})">
+                    <i class="fa-solid fa-paper-plane"></i> 리뷰 남기기
+                </button>
+            </div>
+        `;
+        window._reviewRating = 0;
+        document.getElementById('detailModal').classList.add('open');
+    }
+
+    let reviewRating = 0;
+    function setReviewRating(n) {
+        window._reviewRating = n;
+        document.querySelectorAll('#reviewStars i').forEach((s,i) => s.classList.toggle('active', i < n));
+    }
+
+    function submitReview(id) {
+        const text = document.getElementById('reviewText')?.value.trim();
+        const rating = window._reviewRating || 0;
+        if (!rating) return toastMsg('별점을 선택해주세요!');
+        if (!reviews[id]) reviews[id] = [];
+        reviews[id].push({
+            user: user.name || '익명', rating, text,
+            date: new Date().toISOString().slice(0,10)
+        });
+        saveToStorage('ynu_reviews', reviews);
+        user.reviews = (user.reviews||0) + 1;
+        saveToStorage('ynu_user', user);
+        closeModal('detailModal');
+        renderAll();
+        updateUserUI();
+        toastMsg('리뷰가 등록됐어요! 🎉');
+    }
+
+    // ===== ADD RESTAURANT =====
+    function openAddRestaurant() {
+        document.getElementById('addModal').classList.add('open');
+        window._addRating = 0;
+        document.querySelectorAll('#addStars i').forEach(s => s.classList.remove('active'));
+    }
+    function setAddRating(n) {
+        window._addRating = n;
+        document.querySelectorAll('#addStars i').forEach((s,i) => s.classList.toggle('active', i < n));
+    }
+
+    function submitRestaurant() {
+        const name = document.getElementById('addName').value.trim();
+        if (!name) return toastMsg('식당 이름을 입력해주세요!');
+        const gate = currentGate;
+        const center = gate === 'main' ? MAIN_GATE : BACK_GATE;
+        let lat = center[0] + (Math.random() - 0.5) * 0.005;
+        let lng = center[1] + (Math.random() - 0.5) * 0.005;
+        const coordsStr = document.getElementById('addCoords').value.trim();
+        if (coordsStr) {
+            const parts = coordsStr.split(',').map(Number);
+            if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) { lat = parts[0]; lng = parts[1]; }
+        }
+        const newR = {
+            id: Date.now(), name,
+            lat, lng,
+            menu: document.getElementById('addMenu').value.trim() || '메뉴 정보 없음',
+            price: document.getElementById('addPrice').value || '',
+            solo: document.getElementById('addSolo').value || 'maybe',
+            addr: document.getElementById('addAddr').value.trim() || '',
+            tags: '',
+            gate,
+            photo: document.getElementById('addPhoto').value.trim() || null
+        };
+        restaurants.push(newR);
+        saveToStorage('ynu_restaurants', restaurants);
+
+        // Also add as a review
+        if (window._addRating > 0) {
+            if (!reviews[newR.id]) reviews[newR.id] = [];
+            reviews[newR.id].push({
+                user: user.name || '익명',
+                rating: window._addRating,
+                text: document.getElementById('addReview').value.trim() || '',
+                date: new Date().toISOString().slice(0,10)
+            });
+            saveToStorage('ynu_reviews', reviews);
+            user.reviews = (user.reviews||0) + 1;
+            saveToStorage('ynu_user', user);
+        }
+
+        closeModal('addModal');
+        renderAll();
+        updateUserUI();
+        toastMsg(`🎉 "${name}" 등록 완료!`);
+        // Clear form
+        ['addName','addAddr','addMenu','addPhoto','addReview','addCoords'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.value = '';
+        });
+        window._addRating = 0;
+        document.querySelectorAll('#addStars i').forEach(s => s.classList.remove('active'));
+    }
+
+    // ===== AUTH =====
+    function openAuth() { document.getElementById('authModal').classList.add('open'); }
+    function loginWith(provider) {
+        if (provider === 'anonymous') {
+            user = { name: '익명', email: null, provider: 'anonymous', photo: null, reviews: user.reviews||0 };
+        } else {
+            // Simulated Google/Apple login (in real app, Firebase handles this)
+            const mockName = provider === 'google' ? 'chunga.ryu@gmail.com' : 'apple_user@icloud.com';
+            user = { name: mockName.split('@')[0], email: mockName, provider, photo: null, reviews: user.reviews||0 };
+        }
+        saveToStorage('ynu_user', user);
+        closeModal('authModal');
+        updateUserUI();
+        toastMsg(`✅ ${provider === 'anonymous' ? '익명' : provider} 로그인 완료!`);
+    }
+
+    function updateUserUI() {
+        const badge = document.getElementById('userBadge');
+        const loginBtn = document.getElementById('loginBtn');
+        const loggedIn = user.email || user.provider !== 'anonymous';
+        if (loggedIn) {
+            loginBtn.style.display = 'none';
+            badge.style.display = 'flex';
+        } else {
+            loginBtn.style.display = '';
+            badge.style.display = 'none';
+        }
+        const rank = getRank(user.reviews || 0);
+        document.getElementById('displayName').textContent = user.email ? user.email.split('@')[0] : '익명';
+        document.getElementById('rankShort').textContent = rank.icon + ' ' + rank.name;
+        document.getElementById('avatarIcon').textContent = rank.icon;
+    }
+
+    function getRank(count) {
+        let r = RANKS[0];
+        for (let i = RANKS.length-1; i >= 0; i--) { if (count >= RANKS[i].min) { r = RANKS[i]; break; } }
+        return r;
+    }
+
+    function openProfile() {
+        const rank = getRank(user.reviews || 0);
+        const nextRank = RANKS.find(r => r.min > (user.reviews||0));
+        document.getElementById('profileContent').innerHTML = `
+            <button class="close-btn" onclick="closeModal('profileModal')"><i class="fa-solid fa-xmark"></i></button>
+            <h2>👤 내 프로필</h2>
+            <div style="text-align:center;margin:16px 0">
+                <div style="font-size:48px">${rank.icon}</div>
+                <div style="font-size:18px;font-weight:700;margin-top:8px">${user.email ? user.email.split('@')[0] : '익명'}</div>
+                <div class="rank-badge lv${rank.lv}"><i class="fa-solid fa-crown"></i> ${rank.name}</div>
+                <div style="margin-top:12px;font-size:14px;color:var(--text2)">
+                    📝 작성한 리뷰: <strong>${user.reviews || 0}개</strong>
+                </div>
+                ${nextRank ? `<div style="margin-top:8px;font-size:12px;color:var(--accent2)">다음 랭크까지 ${nextRank.min - (user.reviews||0)}개 남았어요!</div>` : '<div style="margin-top:8px;font-size:12px;color:#ffd700">🏆 최고 랭크 달성!</div>'}
+            </div>
+            <button class="btn btn-outline" style="width:100%;justify-content:center;margin-top:12px" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> 로그아웃
+            </button>
+        `;
+        document.getElementById('profileModal').classList.add('open');
+    }
+
+    function logout() {
+        user = { name: '익명', email: null, provider: 'anonymous', photo: null, reviews: 0 };
+        saveToStorage('ynu_user', user);
+        closeModal('profileModal');
+        updateUserUI();
+        toastMsg('로그아웃 했어요');
+    }
+
+    // ===== UTILS =====
+    function closeModal(id) {
+        document.getElementById(id)?.classList.remove('open');
+    }
+    function toastMsg(msg) {
+        const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('open');
+        });
+    });
+
+    // ===== INIT =====
+    updateUserUI();
+    renderAll();
+    </script>
+</body>
+</html>
